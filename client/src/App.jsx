@@ -16,6 +16,11 @@ function App() {
     setAnalysisResults(null)
   }
 
+  const handleReset = () => {
+    setAnalysisResults(null)
+    setIsLoading(false)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Main Content */}
@@ -43,7 +48,7 @@ function App() {
         {analysisResults && (
           <Dashboard
             results={analysisResults}
-            onReset={() => setAnalysisResults(null)}
+            onReset={handleReset}
           />
         )}
       </main>

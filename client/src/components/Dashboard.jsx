@@ -1,18 +1,16 @@
 import { useState } from 'react'
-import { Download, AlertTriangle, CheckCircle, RotateCcw, Map, Table, Activity, TrendingUp, Zap } from 'lucide-react'
+import { Download, AlertTriangle, CheckCircle, RotateCcw, Table, Activity, TrendingUp, Zap } from 'lucide-react'
 import ResultsTable from './ResultsTable'
-import LocationMap from './LocationMap'
 import ConfidenceIndicator from './ConfidenceIndicator'
 import axios from 'axios'
 import { API_BASE_URL } from '../config'
 
 export default function Dashboard({ results, onReset }) {
-  const [activeView, setActiveView] = useState('table')
   const [isExporting, setIsExporting] = useState(false)
 
   if (!results) return null
 
-  const { summary, results: analysisResults, uploadInfo } = results
+  const { summary, uploadInfo } = results
 
   const handleExport = async () => {
     setIsExporting(true)
@@ -138,30 +136,6 @@ export default function Dashboard({ results, onReset }) {
 
       {/* Action Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-center bg-white/70 backdrop-blur-sm p-6 rounded-2xl border border-slate-200/60">
-        <div className="flex bg-slate-100 rounded-xl p-1 mb-4 sm:mb-0">
-          <button
-            onClick={() => setActiveView('table')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
-              activeView === 'table'
-                ? 'bg-white text-indigo-600 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Table className="h-4 w-4" />
-            <span>Table</span>
-          </button>
-          <button
-            onClick={() => setActiveView('map')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
-              activeView === 'map'
-                ? 'bg-white text-indigo-600 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Map className="h-4 w-4" />
-            <span>Map</span>
-          </button>
-        </div>
 
         <div className="flex space-x-3">
           <button
@@ -184,8 +158,7 @@ export default function Dashboard({ results, onReset }) {
 
       {/* Results Display */}
       <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-slate-200/60 overflow-hidden">
-        {activeView === 'table' && <ResultsTable />}
-        {activeView === 'map' && <LocationMap results={analysisResults} />}
+        <ResultsTable />
       </div>
     </div>
   )

@@ -6,7 +6,7 @@ React frontend application for uploading and analyzing cellular carrier data to 
 
 ### Prerequisites
 - Node.js 18+
-- `bun` package manager
+- `bun` package manager (fast JavaScript runtime and package manager)
 
 ### Installation
 
@@ -40,10 +40,12 @@ React frontend application for uploading and analyzing cellular carrier data to 
 client/
 ├── src/
 │   ├── components/          # React components
-│   │   ├── FileUpload.jsx   # CSV file upload
-│   │   ├── AnalysisResults.jsx # Results display
-│   │   └── ProgressTracker.jsx # Progress tracking
-│   ├── App.jsx             # Main application
+│   │   ├── FileUpload.jsx   # CSV file upload with drag-and-drop
+│   │   ├── Dashboard.jsx    # Main results dashboard
+│   │   ├── ResultsTable.jsx # Data table with sorting/filtering
+│   │   └── ConfidenceIndicator.jsx # Confidence level display
+│   ├── App.jsx             # Main application with state management
+│   ├── config.js           # API configuration
 │   └── main.jsx            # Entry point
 ├── public/                 # Static assets
 ├── package.json           # Dependencies and scripts
@@ -54,12 +56,8 @@ client/
 
 The app connects to the Flask API server at `http://localhost:5000` by default.
 
-To change the API endpoint, update the base URL in your API calls or set up environment variables.
+To change the API endpoint, update the `API_BASE_URL` in `src/config.js`:
 
-## 🎨 Features
-
-- CSV file upload with validation
-- Real-time analysis progress tracking
-- Interactive results visualization
-- Export functionality for analysis results
-- Responsive design for mobile and desktop
+```javascript
+export const API_BASE_URL = 'http://localhost:5000/api'
+```
