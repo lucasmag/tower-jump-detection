@@ -15,12 +15,13 @@ towerjumps/
 │   └── README.md                  # Server documentation
 ├── client/          # React frontend (Vite + Tailwind)
 │   ├── src/
-│   │   ├── components/            # React components
-│   │   └── App.jsx               # Main app component
-│   ├── package.json              # Node dependencies (bun)
-│   └── README.md                 # Client documentation
-├── docker-compose.yml            # Docker setup
-└── README.md                    # This file
+│   │   ├── components/             # React components
+│   │   └── App.jsx                 # Main app component
+│   ├── package.json                # Node dependencies (bun)
+│   └── README.md                   # Client documentation
+├── docker-compose.yml              # Docker setup
+├── README.md                       # This file
+└── tower_jumps_analysis_result.csv # Report result
 ```
 
 ## Features
@@ -90,16 +91,6 @@ For detailed setup instructions, see the individual README files:
    - Browse detailed results in table format
    - Visualize locations on an interactive map
 4. **Export**: Download the analysis results as a CSV file
-
-## Algorithm Details
-
-### Tower Jump Detection Criteria
-- **Velocity-based**: Movements exceeding 1000km/h between consecutive records (aircraft speed threshold)
-- **Frequency analysis**: 3+ state changes within 1 hour indicates suspicious activity
-- **Ping-ponging detection**: 5+ state changes between 2+ states suggests tower jumping
-- **NY/CT specific**: 2+ state changes within 2 hours between New York and Connecticut
-- **Time period grouping**: Groups records within 30-minute windows for analysis
-- **Confidence scoring**: Based on speed, frequency of changes, record count, and geographic patterns
 
 ### Output Format
 Each analysis period includes:
