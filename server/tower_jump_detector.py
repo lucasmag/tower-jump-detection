@@ -197,7 +197,7 @@ class TowerJumpDetector:
             "DurationMinutes": round(duration_minutes, 2),
             "State": primary_state,
             "AllStates": ", ".join(unique_states),
-            "IsTowerJump": is_tower_jump,
+            "IsTowerJump": "yes" if is_tower_jump else "no",
             "ConfidenceLevel": round(confidence, 1),
             "RecordCount": len(period["records"]),
             "StateChanges": num_state_changes,
@@ -350,7 +350,7 @@ class TowerJumpDetector:
         if results.empty:
             return {}
 
-        tower_jumps = results[results["IsTowerJump"] == True]
+        tower_jumps = results[results["IsTowerJump"] == "yes"]
 
         return {
             "total_periods": len(results),

@@ -70,7 +70,7 @@ def run_analysis_background(job_id):
         detector = TowerJumpDetector()
 
         with job_lock:
-            analysis_jobs[job_id]["progress"] = "Creating time periods from data..."
+            analysis_jobs[job_id]["progress"] = "Creating time periods from data... (may take a while for large files)"
 
         # Run the analysis
         results = detector.analyze(current_data)
@@ -87,7 +87,7 @@ def run_analysis_background(job_id):
             analysis_jobs[job_id]["results"] = {
                 "message": "Analysis completed successfully",
                 "total_periods": len(results),
-                "tower_jumps_detected": len(results[results["IsTowerJump"] == True]),
+                "tower_jumps_detected": len(results[results["IsTowerJump"] == "yes"]),
                 "analysis_summary": summary,
                 "results": results.to_dict("records"),
             }
@@ -238,7 +238,7 @@ def export_results():
             mem,
             mimetype="text/csv",
             as_attachment=True,
-            download_name="tower_jumps_analysis.csv",
+            download_name="tower_jumps_analysis_result.csv",
         )
 
     except Exception as e:
