@@ -179,9 +179,9 @@ def get_results():
     # Apply filtering
     filtered_results = analysis_results
     if filter_type == "jumps":
-        filtered_results = analysis_results[analysis_results["IsTowerJump"]]
+        filtered_results = analysis_results[analysis_results["IsTowerJump"] == "yes"]
     elif filter_type == "normal":
-        filtered_results = analysis_results[analysis_results["IsTowerJump"]]
+        filtered_results = analysis_results[analysis_results["IsTowerJump"] == "no"]
 
     # Apply sorting
     ascending = sort_order == "asc"

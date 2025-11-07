@@ -23,7 +23,7 @@ export default function Dashboard({ results, onReset }) {
       const url = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', 'tower_jumps_analysis.csv')
+      link.setAttribute('download', 'tower_jumps_analysis_result.csv')
       document.body.appendChild(link)
       link.click()
       link.remove()

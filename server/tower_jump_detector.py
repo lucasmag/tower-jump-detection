@@ -169,7 +169,7 @@ class TowerJumpDetector:
 
         # Determine if this is a tower jump
         is_tower_jump = self._is_tower_jump(
-            num_state_changes, max_speed_kmh, duration_minutes, unique_states
+            num_state_changes, max_speed_kmh, duration_minutes, unique_states, max_distance_km
         )
 
         # Calculate confidence level
@@ -179,6 +179,8 @@ class TowerJumpDetector:
             duration_minutes,
             len(period["records"]),
             unique_states,
+            max_distance_km,
+            is_tower_jump,
         )
 
         # Determine primary state (most frequent)
@@ -263,15 +265,17 @@ class TowerJumpDetector:
         max_speed: float,
         duration: float,
         unique_states: List[str],
+        max_distance: float,
     ) -> bool:
         """
         Determine if this period represents a tower jump.
 
         Args:
             state_changes: Number of state changes
-            max_speed: Maximum speed detected (mph)
+            max_speed: Maximum speed detected (km/h)
             duration: Duration in minutes
             unique_states: List of unique states
+            max_distance: Maximum distance between any two points (km)
 
         Returns:
             True if this is likely a tower jump
@@ -280,10 +284,19 @@ class TowerJumpDetector:
         # 1. Multiple state changes in short time
         # 2. Impossible travel speeds (>1000 km/h ~ aircraft speed)
         # 3. Rapid ping-ponging between states
+        # 4. Large distances covered in short time
 
+        # Speed-based detection
         if max_speed > self.max_speed_kmh:
             return True
 
+        # Distance-based detection: covering large distances quickly
+        if duration > 0 and max_distance > 0:
+            distance_per_hour = max_distance / (duration / 60)  # km/h equivalent
+            if distance_per_hour > self.max_speed_kmh:  # Same threshold as speed
+                return True
+
+        # Frequency-based detection
         if state_changes >= 3 and duration < 60:  # 3+ state changes in under 1 hour
             return True
 
@@ -304,6 +317,8 @@ class TowerJumpDetector:
         duration: float,
         record_count: int,
         unique_states: List[str],
+        max_distance: float,
+        is_tower_jump: bool,
     ) -> float:
         """
         Calculate confidence level for the tower jump detection.
@@ -313,35 +328,55 @@ class TowerJumpDetector:
         """
         confidence = 50.0  # Base confidence
 
-        # Speed factor
-        if max_speed > self.max_speed_kmh * 2:  # Extremely fast (>2000 km/h)
-            confidence += 30
-        elif max_speed > self.max_speed_kmh:  # Just over threshold (>1000 km/h)
-            confidence += 20
-        elif max_speed < 50:  # Very slow/stationary (<50 km/h)
-            confidence += 10
-
-        # State change frequency factor
-        if duration > 0:
-            change_rate = state_changes / (duration / 60)  # changes per hour
-            if change_rate > 5:  # Very frequent changes
-                confidence += 20
-            elif change_rate > 2:  # Moderate changes
-                confidence += 10
-
-        # Record count factor (more records = higher confidence)
+        # More records = higher confidence in any decision
         if record_count >= 10:
             confidence += 10
         elif record_count >= 5:
             confidence += 5
 
-        # Geographic factor (NY/CT border area)
-        if "New York" in unique_states and "Connecticut" in unique_states:
-            confidence += 15
+        if is_tower_jump:
+            # We think this is cell tower ping-pong, not real movement
+            # Confidence based on how impossible the movement is
 
-        # Duration factor
-        if duration < 30 and state_changes > 0:  # Short duration with changes
-            confidence += 10
+            # Distance-based evidence
+            if max_distance > 500:  # Long distance jump (cross-country)
+                confidence += 20  # Very confident it's tower error
+            elif max_distance > 100:  # Medium distance jump (cross-state)
+                confidence += 15  # Confident it's tower error
+            elif max_distance < 10:  # Short distance ping-pong (border area)
+                confidence += 10  # Likely tower triangulation error
+
+            # Speed-based evidence (backup to distance)
+            if max_speed > self.max_speed_kmh * 2:  # Physically impossible (>2000 km/h)
+                confidence += 15  # Very confident it's tower error
+            elif max_speed > self.max_speed_kmh:  # Very unlikely (>1000 km/h)
+                confidence += 10  # Confident it's tower error
+
+            # Pattern-based evidence
+            if state_changes >= 5:  # Rapid ping-pong pattern
+                confidence += 10  # Likely tower error
+            elif duration < 30 and state_changes >= 3:  # Quick back-and-forth
+                confidence += 10  # Likely tower ping-pong
+            else:
+                confidence += 5   # Possible tower error
+
+        else:
+            # We think this represents real subscriber location/movement
+            if state_changes == 0 and max_distance < 5:  # Stayed in same local area
+                confidence += 20  # Very confident in actual location
+            elif state_changes <= 1 and max_speed < 100:  # Minimal, reasonable movement
+                confidence += 15  # Confident in actual location
+            elif state_changes <= 2 and max_speed < 200:  # Reasonable travel
+                confidence += 10  # Confident in actual location
+            else:
+                confidence += 5   # Somewhat confident
+
+        # NY/CT border area: Known for triangulation issues
+        if "New York" in unique_states and "Connecticut" in unique_states:
+            if is_tower_jump:
+                confidence += 10  # Even more confident it's ping-pong
+            else:
+                confidence -= 5   # Less confident in actual cross-border travel
 
         return min(confidence, 100.0)
 

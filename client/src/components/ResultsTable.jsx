@@ -140,7 +140,7 @@ export default function ResultsTable() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
                 <button
                   onClick={() => handleSort('TimeStart')}
                   className="flex items-center space-x-1 hover:text-gray-700"
@@ -149,10 +149,10 @@ export default function ResultsTable() {
                   {getSortIcon('TimeStart')}
                 </button>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
                 State
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
                 <button
                   onClick={() => handleSort('DurationMinutes')}
                   className="flex items-center space-x-1 hover:text-gray-700"
@@ -161,10 +161,10 @@ export default function ResultsTable() {
                   {getSortIcon('DurationMinutes')}
                 </button>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
                 Tower Jump
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
                 <button
                   onClick={() => handleSort('ConfidenceLevel')}
                   className="flex items-center space-x-1 hover:text-gray-700"
@@ -173,7 +173,7 @@ export default function ResultsTable() {
                   {getSortIcon('ConfidenceLevel')}
                 </button>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
                 <button
                   onClick={() => handleSort('MaxSpeedKMH')}
                   className="flex items-center space-x-1 hover:text-gray-700"
@@ -182,7 +182,7 @@ export default function ResultsTable() {
                   {getSortIcon('MaxSpeedKMH')}
                 </button>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
                 Changes
               </th>
             </tr>
@@ -211,7 +211,7 @@ export default function ResultsTable() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    {result.IsTowerJump ? (
+                    {result.IsTowerJump === "yes" ? (
                       <div className="flex items-center text-red-600">
                         <AlertTriangle className="h-4 w-4 mr-1" />
                         <span className="text-sm font-medium">Yes</span>

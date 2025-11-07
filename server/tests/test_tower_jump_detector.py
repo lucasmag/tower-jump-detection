@@ -199,6 +199,7 @@ class TestIsTowerJump(TestTowerJumpDetector):
             max_speed=2000.0,  # Very high speed
             duration=30.0,
             unique_states=["New York", "Connecticut"],
+            max_distance=100.0,
         )
         self.assertTrue(result)
 
@@ -209,6 +210,7 @@ class TestIsTowerJump(TestTowerJumpDetector):
             max_speed=50.0,  # Normal speed
             duration=30.0,  # Short duration
             unique_states=["New York", "Connecticut"],
+            max_distance=50.0,
         )
         self.assertTrue(result)
 
@@ -219,6 +221,7 @@ class TestIsTowerJump(TestTowerJumpDetector):
             max_speed=100.0,
             duration=60.0,  # Under 2 hours
             unique_states=["New York", "Connecticut"],
+            max_distance=150.0,
         )
         self.assertTrue(result)
 
@@ -229,6 +232,7 @@ class TestIsTowerJump(TestTowerJumpDetector):
             max_speed=50.0,  # Normal speed
             duration=120.0,  # Normal duration
             unique_states=["New York"],
+            max_distance=30.0,  # Reasonable distance
         )
         self.assertFalse(result)
 
@@ -238,14 +242,15 @@ class TestCalculateConfidence(TestTowerJumpDetector):
         """Test _calculate_confidence returns base confidence plus slow speed bonus."""
         confidence = self.detector._calculate_confidence(
             state_changes=0,
-            max_speed=0.0,  # This gets +10 for being <50 km/h
+            max_speed=0.0,
             duration=60.0,
             record_count=1,
             unique_states=["New York"],
+            max_distance=2.0,  # Very small distance
+            is_tower_jump=False,
         )
-        self.assertEqual(
-            confidence, 60.0
-        )  # Base confidence (50) + slow speed bonus (10)
+        # Base (50) + stayed in same local area (20) = 70.0
+        self.assertEqual(confidence, 70.0)
 
     def test_calculate_confidence_high_speed_bonus(self):
         """Test _calculate_confidence gives bonus for high speed."""
@@ -255,6 +260,8 @@ class TestCalculateConfidence(TestTowerJumpDetector):
             duration=60.0,
             record_count=1,
             unique_states=["New York"],
+            max_distance=0.0,
+            is_tower_jump=True,
         )
         self.assertGreater(confidence, 50.0)
 
@@ -266,6 +273,8 @@ class TestCalculateConfidence(TestTowerJumpDetector):
             duration=60.0,
             record_count=5,
             unique_states=["New York", "Connecticut"],
+            max_distance=150.0,
+            is_tower_jump=True,
         )
         self.assertGreater(confidence, 50.0)
 
@@ -277,6 +286,8 @@ class TestCalculateConfidence(TestTowerJumpDetector):
             duration=10.0,  # Very short
             record_count=20,  # Many records
             unique_states=["New York", "Connecticut"],
+            max_distance=600.0,
+            is_tower_jump=True,
         )
         self.assertEqual(confidence, 100.0)
 
@@ -345,7 +356,7 @@ class TestGetSummaryStats(TestTowerJumpDetector):
                 "TimeStart": ["2022-01-26 22:00:00", "2022-01-26 23:00:00"],
                 "TimeEnd": ["2022-01-26 22:30:00", "2022-01-26 23:30:00"],
                 "State": ["New York", "Connecticut"],
-                "IsTowerJump": [True, False],
+                "IsTowerJump": ["yes", "no"],
                 "ConfidenceLevel": [75.0, 45.0],
                 "MaxSpeedKMH": [1500.0, 50.0],
             }
@@ -377,7 +388,7 @@ class TestGetSummaryStats(TestTowerJumpDetector):
                 "TimeStart": ["2022-01-26 22:00:00"],
                 "TimeEnd": ["2022-01-26 22:30:00"],
                 "State": ["New York"],
-                "IsTowerJump": [False],
+                "IsTowerJump": ["no"],
                 "ConfidenceLevel": [45.0],
                 "MaxSpeedKMH": [50.0],
             }

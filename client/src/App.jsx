@@ -39,11 +39,13 @@ function App() {
           </div>
         )}
 
-        <FileUpload
-          onAnalysisComplete={handleAnalysisComplete}
-          onAnalysisStart={handleAnalysisStart}
-          isLoading={isLoading}
-        />
+        {!analysisResults && (
+          <FileUpload
+            onAnalysisComplete={handleAnalysisComplete}
+            onAnalysisStart={handleAnalysisStart}
+            isLoading={isLoading}
+          />
+        )}
 
         {analysisResults && (
           <Dashboard
